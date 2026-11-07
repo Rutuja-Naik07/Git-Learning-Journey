@@ -1,4 +1,4 @@
-# Day 3 demo: the 3 areas of Git
+# Day 4 demo: git add and good commit messages
 # Install VHS: https://github.com/charmbracelet/vhs
 # Run:  vhs demo.tape   (creates demo.gif)
 
@@ -12,36 +12,36 @@ Set Padding 24
 Set Theme "Dracula"
 Set TypingSpeed 50ms
 
-Type "git init -b main areas-demo && cd areas-demo"
+Type "git init -b main commit-lab && cd commit-lab"
 Enter
-Sleep 1500ms
+Sleep 1s
 
-Type "# 1. Two new files on the DESK"
+Type 'echo "Pasta" > menu.txt; echo "Ideas" > notes.txt; echo "Call mom" > todo.txt'
 Enter
-Type 'echo "Milk, eggs" > shopping.txt'
-Enter
-Type 'echo "Project ideas" > notes.txt'
-Enter
-Type "git status"
-Enter
-Sleep 3s
+Sleep 1s
 
-Type "clear"
+Type "# 1. Add ONE file, label it clearly"
 Enter
-Type "# 2. Move ONE file to the PACKING TABLE"
+Type "git add menu.txt"
 Enter
-Type "git add shopping.txt"
+Type 'git commit -m "Add menu"'
 Enter
-Type "git status"
-Enter
-Sleep 3500ms
+Sleep 2s
 
 Type "clear"
 Enter
-Type "# 3. Seal it into the CUPBOARD"
+Type "# 2. Two files that belong together"
 Enter
-Type 'git commit -m "Add shopping list"'
+Type "git add notes.txt todo.txt"
 Enter
-Type "git status"
+Type 'git commit -m "Add notes and todo files"'
+Enter
+Sleep 2s
+
+Type "clear"
+Enter
+Type "# 3. Read the story of your project"
+Enter
+Type "git log --oneline"
 Enter
 Sleep 4s
