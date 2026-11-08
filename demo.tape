@@ -1,4 +1,4 @@
-# Day 4 demo: git add and good commit messages
+# Day 5 demo: git log, your time machine
 # Install VHS: https://github.com/charmbracelet/vhs
 # Run:  vhs demo.tape   (creates demo.gif)
 
@@ -12,36 +12,38 @@ Set Padding 24
 Set Theme "Dracula"
 Set TypingSpeed 50ms
 
-Type "git init -b main commit-lab && cd commit-lab"
+# --- hidden setup: build a small history ---
+Hide
+Type "git init -q -b main time-machine && cd time-machine && clear"
 Enter
-Sleep 1s
+Type 'for i in 1 2 3; do echo "Entry $i" >> diary.txt; git add diary.txt; git commit -q -m "Add diary entry $i"; done; clear'
+Enter
+Show
 
-Type 'echo "Pasta" > menu.txt; echo "Ideas" > notes.txt; echo "Call mom" > todo.txt'
+Type "# Zoom 1: everything"
 Enter
-Sleep 1s
-
-Type "# 1. Add ONE file, label it clearly"
+Type "git log"
 Enter
-Type "git add menu.txt"
-Enter
-Type 'git commit -m "Add menu"'
-Enter
-Sleep 2s
+Sleep 4s
 
 Type "clear"
 Enter
-Type "# 2. Two files that belong together"
-Enter
-Type "git add notes.txt todo.txt"
-Enter
-Type 'git commit -m "Add notes and todo files"'
-Enter
-Sleep 2s
-
-Type "clear"
-Enter
-Type "# 3. Read the story of your project"
+Type "# Zoom 2: one line each"
 Enter
 Type "git log --oneline"
 Enter
+Sleep 3s
+
+Type "# Zoom 3: which files changed?"
+Enter
+Type "git log --stat -2"
+Enter
 Sleep 4s
+
+Type "clear"
+Enter
+Type "# Open one commit"
+Enter
+Type "git show HEAD"
+Enter
+Sleep 5s

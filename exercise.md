@@ -1,62 +1,55 @@
-# 🏋️ Day 4 Exercise: Label Your Boxes
+# 🏋️ Day 5 Exercise: Go Time-Travelling
 
-**Time:** about 15 minutes  |  **Goal:** make 3 commits with clear, well-written messages.
+**Time:** about 15 minutes  |  **Goal:** build a small history, then explore it with `git log`.
 
-## Part 1: Fix the labels (no terminal needed)
+## Part 1: build the history
 
-Rewrite each bad message so it passes the test *"If applied, this commit will ______."*
+1. Create a repo: `git init -b main time-machine` and go inside it.
+2. Make **4 commits**, each with a clear message (remember Day 4!):
+   - Create `diary.txt` with one line, then commit.
+   - Add a second line to `diary.txt`, then commit.
+   - Add a third line to `diary.txt`, then commit.
+   - Create `plans.txt` with one line, then commit.
 
-| ❌ Bad message | ✍️ Your better version |
-|----------------|------------------------|
-| `stuff` | |
-| `fix` | |
-| `asdfgh` | |
-| `final changes!!!` | |
-| `Added login button, fixed bug, updated docs and changed colors` | *(split it into how many commits?)* |
+## Part 2: travel through time
 
-## Part 2: Practice in the terminal
+Run each command and answer the question next to it.
 
-1. Create a new repo: `git init -b main label-lab` and go inside it.
-2. Create three files: `books.txt`, `movies.txt`, `goals.txt`, each with one line.
-3. Stage **only** `books.txt` and commit it with a clear message.
-4. Stage `movies.txt` and `goals.txt` **together** with one `git add` command and commit them.
-5. Add one more line to `books.txt`, run `git status`, then use `git add .` and commit with a **summary and a body** (two `-m` flags).
-6. Run `git log --oneline` and read your history like a story.
+| Command | Question |
+|---------|----------|
+| `git log` | What is the 7-character ID of your newest commit? |
+| `git log --oneline` | Which commit does `HEAD` point to? |
+| `git log --oneline -n 2` | How many lines did you get? |
+| `git log --stat` | Which commit touched `plans.txt`? |
+| `git log --oneline --grep="diary"` | How many commits mention "diary"? |
+| `git show <hash>` | What does the `+` line show? (use the hash of your 3rd commit) |
 
 ## ✅ Checklist
 
-- [ ] Every summary is under 50 characters
-- [ ] Every summary starts with a verb
-- [ ] No summary ends with a full stop
-- [ ] I ran `git status` before using `git add .`
-- [ ] `git log --oneline` shows 3 clear commits
+- [ ] I made 4 commits with clear messages
+- [ ] I can find `HEAD` in the log output
+- [ ] I used `--oneline`, `-n` and `--stat`
+- [ ] I opened a commit with `git show`
+- [ ] I left the log screen with `q` when it opened
 
 ## ⭐ Bonus quests
 
-- **Add a type:** redo one commit with a prefix, like `docs: Add books list`.
-- **Peek at the body:** run `git log -1` and find your longer note.
+- **Create a shortcut:** run `git config --global alias.lg "log --oneline --graph --decorate"` and then type `git lg`.
+- **Find by author:** try `git log --oneline --author="Your Name"`.
 - **Post your progress:** share your `git log --oneline` with the tag `#GitQuest`.
 
 ## 🧠 Quick quiz
 
-1. Which is better: `Added menu` or `Add menu`?
-2. What does `git add .` do?
-3. How many changes should one commit contain?
+1. Which command shows history with one line per commit?
+2. What does `HEAD` mean?
+3. How do you leave the log screen when it opens?
 
 <details>
 <summary>👀 Click to see the answers</summary>
 
-**Part 1 examples** (yours may differ!)
-- `stuff` → `Add menu with three dishes`
-- `fix` → `Fix typo in menu title`
-- `asdfgh` → `Add notes file`
-- `final changes!!!` → `Update todo list with deadlines`
-- The long message → three commits: `Add login button`, `Fix signup bug`, `Update docs`
-
-**Quiz**
-1. `Add menu`. Commit messages use the imperative mood, as if giving a command.
-2. It stages every change in the current folder.
-3. One logical change.
+1. `git log --oneline`
+2. It is the commit you are currently on: the "you are here" pin.
+3. Press `q`.
 
 </details>
 
@@ -64,24 +57,31 @@ Rewrite each bad message so it passes the test *"If applied, this commit will __
 <summary>🆘 Stuck? Click for the full solution</summary>
 
 ```bash
-git init -b main label-lab
-cd label-lab
-echo "Dune" > books.txt
-echo "Inception" > movies.txt
-echo "Read more" > goals.txt
-git add books.txt
-git commit -m "Add books list"
-git add movies.txt goals.txt
-git commit -m "Add movies and goals lists"
-echo "Emma" >> books.txt
-git status
-git add .
-git commit -m "Update books list" -m "Added Emma to the reading list."
+git init -b main time-machine
+cd time-machine
+echo "Went to the market" > diary.txt
+git add diary.txt
+git commit -m "Add first diary entry"
+echo "Learned Git today" >> diary.txt
+git add diary.txt
+git commit -m "Add second diary entry"
+echo "Baked a cake" >> diary.txt
+git add diary.txt
+git commit -m "Add third diary entry"
+echo "Planning a trip" > plans.txt
+git add plans.txt
+git commit -m "Add travel plans"
+
+git log
 git log --oneline
+git log --oneline -n 2
+git log --stat
+git log --oneline --grep="diary"
+git show HEAD~1
 ```
 
 </details>
 
 ---
 
-⬅️ [Back to the Day 4 lesson](./lesson.md)
+⬅️ [Back to the Day 5 lesson](./lesson.md)
