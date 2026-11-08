@@ -1,10 +1,10 @@
-# 🏷️ Day 4: `git add` and Writing Good Commit Messages
+# ⏳ Day 5: `git log`, Your Time Machine
 
 ![Level](https://img.shields.io/badge/Week_1-First_Steps-2F6FEB?style=flat-square)
 ![Difficulty](https://img.shields.io/badge/Difficulty-Beginner-2ECC71?style=flat-square)
 
-> **Yesterday:** you learned the 3 areas: desk, packing table, cupboard.
-> **Today:** you learn to pack the box properly with `git add`, and to write a **label** (commit message) your future self will understand.
+> **Yesterday:** you learned to write clear labels for your save points.
+> **Today:** you learn to **travel back** and read them. `git log` is the time machine of Git.
 
 ---
 
@@ -12,145 +12,172 @@
 
 By the end of this lesson you will be able to:
 
-- Stage one file, several files, or everything with `git add`
-- Write commit messages that are short, clear and useful
-- Keep each commit to **one** logical change
-- Read your history with `git log --oneline`
+- Read the full output of `git log`
+- Use `--oneline`, `-n`, `--stat` and `--graph` to zoom in and out
+- Search your history with `--grep`
+- Open a single commit with `git show`
+- Escape the log screen without panicking 😅
 
-## 🐱 The analogy: the label on the box
+## 🐱 The analogy: the time machine
 
-When you seal a box, you stick a label on it. A label like **"stuff"** tells nobody anything. A label like **"Winter clothes, size M"** saves you an hour next year.
-
-A commit message is the label on your save point. Six months from now, it is the *only* clue you will have about what is inside.
+Every commit is a save point on a timeline. `git log` is the dashboard of your time machine: it lists every save point, **newest first**, so you can see where you have been.
 
 ```mermaid
 gitGraph
-  commit id: "Add menu"
-  commit id: "Add notes and todo files"
-  commit id: "Update menu and todo lists"
+  commit id: "Add first diary entry"
+  commit id: "Add second diary entry"
+  commit id: "Add third diary entry"
+  commit id: "Add travel plans"
 ```
 
-## 🧰 Part 1: the `git add` toolbox
+The newest commit is marked **HEAD**, a pin that says **"you are here"**.
 
-| Command | What it stages | When to use it |
-|---------|----------------|----------------|
-| `git add menu.txt` | One file | The safest habit |
-| `git add notes.txt todo.txt` | Several named files | Files that belong together |
-| `git add *.md` | Every file matching a pattern | All Markdown files, for example |
-| `git add .` | Every change in the current folder | When you have checked `git status` first |
-
-> ⚠️ **Habit:** run `git status` *before* `git add .` so you know exactly what you are about to pack.
-
-## ✍️ Part 2: writing good commit messages
-
-### The anatomy
+## 🔍 Part 1: reading one log entry
 
 ```text
-feat: Add dessert section to menu
- │    └─────────────┬────────────
- │          short summary: starts with a verb, no full stop
- └── type (optional): feat, fix, docs, chore
+commit e41b7a9c3d1f2a8b6e0c5d4f7a9b1c2d3e4f5a6b (HEAD -> main)
+Author: Your Name <you@example.com>
+Date:   Mon Nov 9 10:42:17 2026 +0530
+
+    Add travel plans
 ```
 
-### 5 golden rules
+| Part | What it means |
+|------|---------------|
+| `e41b7a9c3d1f...` | The commit's unique ID, called a **hash**. The first 7 characters are enough to name it |
+| `(HEAD -> main)` | **You are here.** HEAD is the commit you are currently on, on branch `main` |
+| `Author` | Who saved it (from your `git config` on Day 1) |
+| `Date` | When it was saved |
+| `Add travel plans` | The label you wrote. This is why Day 4 matters! |
 
-1. Keep the summary under **50 characters**
-2. Start with a **verb**: `Add`, `Fix`, `Update`, `Remove`
-3. **No full stop** at the end
-4. **One commit = one logical change**
-5. Say **what** changed (use a longer body for **why**)
-
-### The magic test
-
-Finish this sentence: **"If applied, this commit will ______."**
-
-- ✅ "...**Add menu**" → makes sense
-- ❌ "...**stuff**" → doesn't
-
-### Bad vs good
-
-| ❌ Bad | ✅ Good |
-|--------|---------|
-| `stuff` | `Add menu with three dishes` |
-| `fix` | `Fix typo in menu title` |
-| `asdfgh` | `Add notes file` |
-| `final changes!!!` | `Update todo list with deadlines` |
-| `Added login, fixed bug, updated docs` | Three separate commits, one per change |
-
-### Commit types you will see everywhere
-
-| Prefix | Use it for |
-|--------|-----------|
-| `feat:` | A new feature |
-| `fix:` | A bug fix |
-| `docs:` | Documentation only |
-| `chore:` | Housekeeping and small upkeep |
-| `refactor:` | Tidying code without changing what it does |
-
-## 🛠️ Part 3: step by step
-
-### Step 1: Start a practice repo
+## 🛠️ Part 2: build a tiny history
 
 ```bash
-git init -b main commit-lab
-cd commit-lab
+git init -b main time-machine
+cd time-machine
+
+echo "Went to the market" > diary.txt
+git add diary.txt
+git commit -m "Add first diary entry"
+
+echo "Learned Git today" >> diary.txt
+git add diary.txt
+git commit -m "Add second diary entry"
+
+echo "Baked a cake" >> diary.txt
+git add diary.txt
+git commit -m "Add third diary entry"
+
+echo "Planning a trip" > plans.txt
+git add plans.txt
+git commit -m "Add travel plans"
 ```
 
-### Step 2: Create three files
+You now have 4 save points. Let's travel.
+
+## ⏪ Part 3: five zoom levels
+
+### Zoom 1: everything
 
 ```bash
-echo "Pasta" > menu.txt
-echo "Ideas" > notes.txt
-echo "Call mom" > todo.txt
+git log
 ```
 
-### Step 3: Add ONE file and commit with a clear label
+Full details for every commit, newest first. If the list is long, Git opens a scrolling screen. **Press `q` to leave it.**
 
-```bash
-git add menu.txt
-git commit -m "Add menu"
-```
-
-```text
-[main (root-commit) c92f6e1] Add menu
- 1 file changed, 1 insertion(+)
- create mode 100644 menu.txt
-```
-
-### Step 4: Add TWO files at once
-
-```bash
-git add notes.txt todo.txt
-git commit -m "Add notes and todo files"
-```
-
-These two files belong together, so one commit is fine.
-
-### Step 5: Edit, check, add everything, commit with a body
-
-```bash
-echo "Salad" >> menu.txt
-echo "Buy milk" >> todo.txt
-git status
-git add .
-git commit -m "Update menu and todo lists" -m "Added salad to the menu and a reminder to buy milk."
-```
-
-The second `-m` becomes the **body**: a longer note explaining the change.
-
-### Step 6: Read your history
+### Zoom 2: one line each
 
 ```bash
 git log --oneline
 ```
 
 ```text
-5e9b2c4 (HEAD -> main) Update menu and todo lists
-a17d803 Add notes and todo files
-c92f6e1 Add menu
+e41b7a9 (HEAD -> main) Add travel plans
+9c2d5f0 Add third diary entry
+2ab8e13 Add second diary entry
+7f06c4d Add first diary entry
 ```
 
-Three clear labels, three clear stories. 🎉
+This is the one you will use 90% of the time.
+
+### Zoom 3: only the last few
+
+```bash
+git log --oneline -n 2
+```
+
+```text
+e41b7a9 (HEAD -> main) Add travel plans
+9c2d5f0 Add third diary entry
+```
+
+### Zoom 4: which files changed?
+
+```bash
+git log --stat -2
+```
+
+```text
+commit e41b7a9... (HEAD -> main)
+    Add travel plans
+ plans.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 9c2d5f0...
+    Add third diary entry
+ diary.txt | 1 +
+ 1 file changed, 1 insertion(+)
+```
+
+### Zoom 5: the map
+
+```bash
+git log --graph --oneline
+```
+
+```text
+* e41b7a9 (HEAD -> main) Add travel plans
+* 9c2d5f0 Add third diary entry
+* 2ab8e13 Add second diary entry
+* 7f06c4d Add first diary entry
+```
+
+Right now it is a straight line. In Week 2, when you learn branches, this view becomes a real map.
+
+## 🔎 Part 4: search and open
+
+### Search messages
+
+```bash
+git log --oneline --grep="diary"
+```
+
+```text
+9c2d5f0 Add third diary entry
+2ab8e13 Add second diary entry
+7f06c4d Add first diary entry
+```
+
+### Open one commit
+
+```bash
+git show 9c2d5f0
+```
+
+```text
+commit 9c2d5f0...
+    Add third diary entry
+
+diff --git a/diary.txt b/diary.txt
+--- a/diary.txt
++++ b/diary.txt
+@@ -1,2 +1,3 @@
+ Went to the market
+ Learned Git today
++Baked a cake
+```
+
+The line starting with `+` is what that commit added. We will decode this properly on Day 6 (`git diff`).
 
 ## 🎬 Watch it happen
 
@@ -162,25 +189,35 @@ Three clear labels, three clear stories. 🎉
 
 | Command | What it does |
 |---------|--------------|
-| `git add <file>` | Stage one file |
-| `git add a.txt b.txt` | Stage several files |
-| `git add .` | Stage all changes in this folder |
-| `git commit -m "message"` | Save with a short label |
-| `git commit -m "summary" -m "body"` | Save with a label and a longer note |
-| `git log --oneline` | Show your history, one line per commit |
+| `git log` | Full history, newest first |
+| `git log --oneline` | One line per commit |
+| `git log --oneline -n 3` | Only the last 3 commits |
+| `git log --stat` | Shows which files each commit touched |
+| `git log --graph --oneline` | Draws the history as a map |
+| `git log --grep="word"` | Finds commits whose message has a word |
+| `git show <hash>` | Opens one commit in detail |
+
+## 🌟 Bonus: make your own shortcut
+
+```bash
+git config --global alias.lg "log --oneline --graph --decorate"
+git lg
+```
+
+`git lg` is now a shortcut for that long command.
 
 ## 🆘 Common problems
 
 | You see | What it means | Fix |
 |---------|---------------|-----|
-| Editor opens (Vim) after `git commit` | You forgot `-m` | Type `:q!` to leave, then use `git commit -m "message"` |
-| `pathspec 'x' did not match any files` | The file name is wrong | Check spelling with `ls` |
-| Committed the wrong files | You used `git add .` too fast | Next time run `git status` first (undo tools arrive in Week 2) |
+| Screen stuck with `:` or `(END)` at the bottom | Git opened a scrolling pager | Press `q` to quit. `space` = next page, arrow keys = scroll |
+| `fatal: your current branch 'main' does not have any commits yet` | No commits exist | Make a commit first |
+| `fatal: ambiguous argument` | The hash or word is wrong | Copy the 7-character hash from `git log --oneline` |
 
 ## ✅ Your turn
 
-Head to [`exercise.md`](./exercise.md) and practice writing labels.
+Head to [`exercise.md`](./exercise.md) and go time-travelling.
 
 ---
 
-⬅️ [Day 3: The 3 areas of Git](../day03-three-areas) | ➡️ **Day 5: git log, your time machine** *(coming tomorrow)*
+⬅️ [Day 4: git add and good commit messages](../day04-commit-messages) | ➡️ **Day 6: git diff, spot the difference** *(coming tomorrow)*
