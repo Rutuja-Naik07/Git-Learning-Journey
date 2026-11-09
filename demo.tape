@@ -1,4 +1,4 @@
-# Day 5 demo: git log, your time machine
+# Day 6 demo: git diff, spot the difference
 # Install VHS: https://github.com/charmbracelet/vhs
 # Run:  vhs demo.tape   (creates demo.gif)
 
@@ -12,38 +12,33 @@ Set Padding 24
 Set Theme "Dracula"
 Set TypingSpeed 50ms
 
-# --- hidden setup: build a small history ---
+# --- hidden setup: one saved recipe ---
 Hide
-Type "git init -q -b main time-machine && cd time-machine && clear"
+Type "git init -q -b main spot-diff && cd spot-diff"
 Enter
-Type 'for i in 1 2 3; do echo "Entry $i" >> diary.txt; git add diary.txt; git commit -q -m "Add diary entry $i"; done; clear'
+Type 'printf "Pasta\nTomato sauce\nBasil\n" > recipe.txt && git add recipe.txt && git commit -q -m "Add recipe" && clear'
 Enter
 Show
 
-Type "# Zoom 1: everything"
+Type "# 1. Change the file on the desk"
 Enter
-Type "git log"
+Type 'printf "Pasta\nPesto sauce\nBasil\nCheese\n" > recipe.txt'
 Enter
-Sleep 4s
+Type "git diff"
+Enter
+Sleep 5s
 
 Type "clear"
 Enter
-Type "# Zoom 2: one line each"
+Type "# 2. Pack it. Now git diff is empty..."
 Enter
-Type "git log --oneline"
+Type "git add recipe.txt"
 Enter
-Sleep 3s
-
-Type "# Zoom 3: which files changed?"
+Type "git diff"
 Enter
-Type "git log --stat -2"
+Sleep 2s
+Type "# ...because the change is on the packing table"
 Enter
-Sleep 4s
-
-Type "clear"
-Enter
-Type "# Open one commit"
-Enter
-Type "git show HEAD"
+Type "git diff --staged"
 Enter
 Sleep 5s
