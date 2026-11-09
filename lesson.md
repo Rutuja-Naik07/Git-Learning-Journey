@@ -1,10 +1,10 @@
-# ⏳ Day 5: `git log`, Your Time Machine
+# 🔍 Day 6: `git diff`, Spot the Difference
 
 ![Level](https://img.shields.io/badge/Week_1-First_Steps-2F6FEB?style=flat-square)
 ![Difficulty](https://img.shields.io/badge/Difficulty-Beginner-2ECC71?style=flat-square)
 
-> **Yesterday:** you learned to write clear labels for your save points.
-> **Today:** you learn to **travel back** and read them. `git log` is the time machine of Git.
+> **Yesterday:** you travelled back in time with `git log`.
+> **Today:** you learn to see *exactly what changed*. `git diff` is the "spot the difference" puzzle of Git.
 
 ---
 
@@ -12,172 +12,139 @@
 
 By the end of this lesson you will be able to:
 
-- Read the full output of `git log`
-- Use `--oneline`, `-n`, `--stat` and `--graph` to zoom in and out
-- Search your history with `--grep`
-- Open a single commit with `git show`
-- Escape the log screen without panicking 😅
+- Use `git diff` to see changes you have not staged yet
+- Use `git diff --staged` to see what is about to be committed
+- Compare two commits
+- Read a diff: which lines were removed, which were added
 
-## 🐱 The analogy: the time machine
+## 🐱 The analogy: red pen and green pen
 
-Every commit is a save point on a timeline. `git log` is the dashboard of your time machine: it lists every save point, **newest first**, so you can see where you have been.
+Imagine an editor checking your homework with two pens:
+
+- 🔴 **Red pen** crosses out what was **removed**
+- 🟢 **Green pen** writes in what was **added**
+
+`git diff` does exactly that for your files, and it can compare any two of the places you learned about on Day 3.
 
 ```mermaid
-gitGraph
-  commit id: "Add first diary entry"
-  commit id: "Add second diary entry"
-  commit id: "Add third diary entry"
-  commit id: "Add travel plans"
+flowchart LR
+  A["🪑 Working directory<br/>(desk)"] -- "git diff" --> B["📦 Staging area<br/>(packing table)"]
+  B -- "git diff --staged" --> C["🗄️ Repository<br/>(cupboard, HEAD)"]
+  A -. "git diff HEAD" .-> C
 ```
 
-The newest commit is marked **HEAD**, a pin that says **"you are here"**.
+| Command | Compares | Question it answers |
+|---------|----------|---------------------|
+| `git diff` | Desk vs packing table | What did I change but not pack yet? |
+| `git diff --staged` | Packing table vs cupboard | What am I about to commit? |
+| `git diff HEAD` | Desk vs cupboard | Everything I changed since my last save |
+| `git diff A B` | Two save points | What changed between these commits? |
 
-## 🔍 Part 1: reading one log entry
-
-```text
-commit e41b7a9c3d1f2a8b6e0c5d4f7a9b1c2d3e4f5a6b (HEAD -> main)
-Author: Your Name <you@example.com>
-Date:   Mon Nov 9 10:42:17 2026 +0530
-
-    Add travel plans
-```
-
-| Part | What it means |
-|------|---------------|
-| `e41b7a9c3d1f...` | The commit's unique ID, called a **hash**. The first 7 characters are enough to name it |
-| `(HEAD -> main)` | **You are here.** HEAD is the commit you are currently on, on branch `main` |
-| `Author` | Who saved it (from your `git config` on Day 1) |
-| `Date` | When it was saved |
-| `Add travel plans` | The label you wrote. This is why Day 4 matters! |
-
-## 🛠️ Part 2: build a tiny history
+## 🛠️ Part 1: set up a tiny recipe
 
 ```bash
-git init -b main time-machine
-cd time-machine
-
-echo "Went to the market" > diary.txt
-git add diary.txt
-git commit -m "Add first diary entry"
-
-echo "Learned Git today" >> diary.txt
-git add diary.txt
-git commit -m "Add second diary entry"
-
-echo "Baked a cake" >> diary.txt
-git add diary.txt
-git commit -m "Add third diary entry"
-
-echo "Planning a trip" > plans.txt
-git add plans.txt
-git commit -m "Add travel plans"
+git init -b main spot-diff
+cd spot-diff
+printf "Pasta\nTomato sauce\nBasil\n" > recipe.txt
+git add recipe.txt
+git commit -m "Add recipe"
 ```
 
-You now have 4 save points. Let's travel.
+## 👀 Part 2: spot the difference
 
-## ⏪ Part 3: five zoom levels
-
-### Zoom 1: everything
+### Step 1: change the file
 
 ```bash
-git log
-```
-
-Full details for every commit, newest first. If the list is long, Git opens a scrolling screen. **Press `q` to leave it.**
-
-### Zoom 2: one line each
-
-```bash
-git log --oneline
+printf "Pasta\nPesto sauce\nBasil\nCheese\n" > recipe.txt
+git status
 ```
 
 ```text
-e41b7a9 (HEAD -> main) Add travel plans
-9c2d5f0 Add third diary entry
-2ab8e13 Add second diary entry
-7f06c4d Add first diary entry
+Changes not staged for commit:
+        modified:   recipe.txt
 ```
 
-This is the one you will use 90% of the time.
-
-### Zoom 3: only the last few
+### Step 2: see what changed
 
 ```bash
-git log --oneline -n 2
+git diff
 ```
 
 ```text
-e41b7a9 (HEAD -> main) Add travel plans
-9c2d5f0 Add third diary entry
+diff --git a/recipe.txt b/recipe.txt
+index 3f1a2b4..8c9d0e5 100644
+--- a/recipe.txt
++++ b/recipe.txt
+@@ -1,3 +1,4 @@
+ Pasta
+-Tomato sauce
++Pesto sauce
+ Basil
++Cheese
 ```
 
-### Zoom 4: which files changed?
+### How to read it
+
+| Part | Meaning |
+|------|---------|
+| `--- a/recipe.txt` | The **old** version (what Git last saved) |
+| `+++ b/recipe.txt` | The **new** version (what is on your desk) |
+| `@@ -1,3 +1,4 @@` | Location: the old file showed 3 lines from line 1, the new one shows 4 |
+| `-Tomato sauce` | 🔴 This line was **removed** |
+| `+Pesto sauce` | 🟢 This line was **added** |
+| ` Pasta` (starts with a space) | Unchanged line, shown for context |
+
+> 💡 A changed line always appears as one `-` line and one `+` line: the old text out, the new text in.
+
+### Step 3: pack it, then look again
 
 ```bash
-git log --stat -2
+git add recipe.txt
+git diff
+```
+
+Nothing appears. 😮 That is correct: the changes moved from the desk to the packing table, so there is no difference *between those two* any more. Now ask about the packing table:
+
+```bash
+git diff --staged
+```
+
+You see the same diff again. This is your **last check before committing**.
+
+### Step 4: commit and compare two saves
+
+```bash
+git commit -m "Switch to pesto and add cheese"
+git diff HEAD~1 HEAD
+```
+
+`HEAD` is the newest commit and `HEAD~1` is the one before it. You see the same changes, now as a comparison between two save points.
+
+### Step 5: get a short summary
+
+```bash
+git diff --stat HEAD~1 HEAD
 ```
 
 ```text
-commit e41b7a9... (HEAD -> main)
-    Add travel plans
- plans.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-commit 9c2d5f0...
-    Add third diary entry
- diary.txt | 1 +
- 1 file changed, 1 insertion(+)
+ recipe.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 ```
 
-### Zoom 5: the map
+## 🌟 Bonus: word-level diff
 
 ```bash
-git log --graph --oneline
+git diff --word-diff
 ```
 
 ```text
-* e41b7a9 (HEAD -> main) Add travel plans
-* 9c2d5f0 Add third diary entry
-* 2ab8e13 Add second diary entry
-* 7f06c4d Add first diary entry
+Pasta
+[-Tomato-]{+Pesto+} sauce
+Basil
+{+Cheese+}
 ```
 
-Right now it is a straight line. In Week 2, when you learn branches, this view becomes a real map.
-
-## 🔎 Part 4: search and open
-
-### Search messages
-
-```bash
-git log --oneline --grep="diary"
-```
-
-```text
-9c2d5f0 Add third diary entry
-2ab8e13 Add second diary entry
-7f06c4d Add first diary entry
-```
-
-### Open one commit
-
-```bash
-git show 9c2d5f0
-```
-
-```text
-commit 9c2d5f0...
-    Add third diary entry
-
-diff --git a/diary.txt b/diary.txt
---- a/diary.txt
-+++ b/diary.txt
-@@ -1,2 +1,3 @@
- Went to the market
- Learned Git today
-+Baked a cake
-```
-
-The line starting with `+` is what that commit added. We will decode this properly on Day 6 (`git diff`).
+Perfect when only a word or two changed in a long line.
 
 ## 🎬 Watch it happen
 
@@ -189,35 +156,26 @@ The line starting with `+` is what that commit added. We will decode this proper
 
 | Command | What it does |
 |---------|--------------|
-| `git log` | Full history, newest first |
-| `git log --oneline` | One line per commit |
-| `git log --oneline -n 3` | Only the last 3 commits |
-| `git log --stat` | Shows which files each commit touched |
-| `git log --graph --oneline` | Draws the history as a map |
-| `git log --grep="word"` | Finds commits whose message has a word |
-| `git show <hash>` | Opens one commit in detail |
-
-## 🌟 Bonus: make your own shortcut
-
-```bash
-git config --global alias.lg "log --oneline --graph --decorate"
-git lg
-```
-
-`git lg` is now a shortcut for that long command.
+| `git diff` | Desk vs packing table |
+| `git diff --staged` | Packing table vs cupboard (what you will commit) |
+| `git diff HEAD` | Desk vs cupboard (all uncommitted changes) |
+| `git diff HEAD~1 HEAD` | Compare the last two commits |
+| `git diff --stat` | Short summary of changed files |
+| `git diff <file>` | Show changes in one file only |
+| `git diff --word-diff` | Highlight changed words |
 
 ## 🆘 Common problems
 
 | You see | What it means | Fix |
 |---------|---------------|-----|
-| Screen stuck with `:` or `(END)` at the bottom | Git opened a scrolling pager | Press `q` to quit. `space` = next page, arrow keys = scroll |
-| `fatal: your current branch 'main' does not have any commits yet` | No commits exist | Make a commit first |
-| `fatal: ambiguous argument` | The hash or word is wrong | Copy the 7-character hash from `git log --oneline` |
+| `git diff` prints nothing | The changes are already staged, or nothing changed | Try `git diff --staged`, or edit the file |
+| A new file is missing from `git diff` | Untracked files are not shown | Run `git add <file>`, then `git diff --staged` |
+| Screen stuck with `(END)` | Git opened a scrolling screen | Press `q` |
 
 ## ✅ Your turn
 
-Head to [`exercise.md`](./exercise.md) and go time-travelling.
+Head to [`exercise.md`](./exercise.md) and play spot the difference.
 
 ---
 
-⬅️ [Day 4: git add and good commit messages](../day04-commit-messages) | ➡️ **Day 6: git diff, spot the difference** *(coming tomorrow)*
+⬅️ [Day 5: git log, your time machine](../day05-git-log) | ➡️ **Day 7: Week 1 recap, quiz and cheat sheet** *(coming tomorrow)*
